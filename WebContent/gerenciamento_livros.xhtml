@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+<h:body>
+	<p:panel>
+		<center>
+			<h1>Cadastro de Livros</h1>
+		</center>
+	</p:panel>
+
+	<p:growl showDetail="true">
+	</p:growl>
+	<h:form id="formulario">
+		<h:panelGrid columns="2">
+
+			<p:outputLabel>Isbn:</p:outputLabel>
+			<p:inputText readonly="true" value="#{livrosManagedBean.livros.isbn}" />
+
+			<p:outputLabel>Titulo:</p:outputLabel>
+			<p:inputText value="#{livrosManagedBean.livros.titulo}"
+				required="true" requiredMessage="Informe o Titulo!" maxlength="50" />
+
+			<p:outputLabel>Editora:</p:outputLabel>
+			<p:inputText value="#{livrosManagedBean.livros.editora}"
+				required="true" requiredMessage="Informe a Editora!" maxlength="50" />
+
+			<p:outputLabel>Data Publicação:</p:outputLabel>
+			<p:calendar pattern="dd/MM/yyyy" locale="pt"
+				value="#{livrosManagedBean.livros.data_publicacao}" />
+
+			<p:outputLabel>Preço:</p:outputLabel>
+			<p:inputNumber value="#{livrosManagedBean.livros.preco}" />
+
+		</h:panelGrid>
+
+		<br />
+		<p:commandButton value="Salvar" ajax="false"
+			action="#{livrosManagedBean.salvar}" />
+
+		<p:commandButton value="Novo" immediate="true"
+			action="#{livrosManagedBean.novo}">
+			<f:ajax execute="@this" render="@form" />
+		</p:commandButton>
+
+		<br />
+		<br />
+	</h:form>
+
+	<h:form>
+		<p:panel header="Pesquisar Livro por Isbn">
+			<h:panelGrid columns="3">
+				<h:outputLabel value="Isbn:" />
+				<p:inputText value="#{livrosManagedBean.campoPesquisa}" />
+				<p:commandButton value="Pesquisar"
+					actionListener="#{livrosManagedBean.pesquisarListaLivros}"
+					update="formtable" />
+
+			</h:panelGrid>
+		</p:panel>
+	</h:form>
+
+	<h:form id="formtable">
+		<p:dataTable value="#{livrosManagedBean.list}" var="livro" rows="5"
+			paginator="true" lazy="true" paginatorPosition="bottom"
+			paginatorTemplate="{FirstPageLink} {PageLinks} {LastPageLink}">
+			<p:column headerText="Isbn" width="50">
+				<h:outputText value="#{livro.isbn}" />
+			</p:column>
+
+			<p:column headerText="Titulo">
+				<h:outputText value="#{livro.titulo}" />
+			</p:column>
+
+			<p:column headerText="Preço">
+				<h:outputText value="#{livro.preco}" />
+			</p:column>
+
+
+			<p:column headerText="Autores">
+				<center>
+					<p:commandLink update=":formtable:dialogAutores"
+						oncomplete="PF('dialogAutores').show()">
+						<f:setPropertyActionListener value="#{livro}"
+							target="#{livrosManagedBean.livros}" />
+						<h:graphicImage width="35" height="35"
+							url="resources/img/guilhermeicon.png" />
+					</p:commandLink>
+				</center>
+			</p:column>
+
+			<p:column headerText="Criticas">
+				<center>
+					<p:commandLink update=":formtable:dialogCriticas"
+						oncomplete="PF('dialogCriticas').show()">
+						<f:setPropertyActionListener value="#{livro}"
+							target="#{livrosManagedBean.livros}" />
+						<h:graphicImage width="35" height="35"
+							url="resources/img/critica.png" />
+					</p:commandLink>
+				</center>
+			</p:column>
+
+
+			<p:column headerText="Editar">
+				<center>
+					<h:commandLink immediate="true" id="botaoeditar">
+						<f:setPropertyActionListener value="#{livro}"
+							target="#{livrosManagedBean.livros}" />
+						<f:ajax execute="botaoeditar" render=":formulario"></f:ajax>
+						<h:graphicImage url="resources/img/editar.png" width="35"
+							height="30" />
+					</h:commandLink>
+				</center>
+			</p:column>
+
+			<p:column headerText="Remover">
+				<center>
+					<h:commandLink id="botaoremover"
+						action="#{livrosManagedBean.remover}">
+						<f:setPropertyActionListener value="#{livro}"
+							target="#{livrosManagedBean.livros}" />
+						<f:ajax execute="botaoremover" render="@form">
+
+						</f:ajax>
+						<h:graphicImage url="resources/img/delete.png" width="35"
+							height="30" />
+					</h:commandLink>
+				</center>
+			</p:column>
+
+		</p:dataTable>
+
+		<p:dialog header="Adicione Autores para esse Livro" id="dialogAutores"
+			widgetVar="dialogAutores" position="center" modal="true"
+			width="600px" resizable="false">
+
+			<p:panelGrid>
+				<h:outputLabel value="Autores: " />
+				<p:inputText value="#{livrosManagedBean.autores.nome_autor}"
+					id="autoresadd" style="width:350px" />
+				<p:commandButton value="Adicionar"
+					actionListener="#{livrosManagedBean.addAutor}"
+					update="autoresadd, dataTableAutores">
+				</p:commandButton>
+			</p:panelGrid>
+
+			<br />
+
+			<p:dataTable value="#{livrosManagedBean.livros.autores}" var="autor"
+				id="dataTableAutores">
+				<p:column headerText="Id" width="50">
+					<h:outputLabel value="#{autor.id}" />
+				</p:column>
+				<p:column headerText="Autores">
+					<h:outputText value="#{autor.nome_autor}" />
+				</p:column>
+				<p:column headerText="Remover" width="80">
+					<center>
+						<h:commandLink id="botaoremoverautor"
+							actionListener="#{livrosManagedBean.removerAutor}">
+							<f:param name="codigoautor" value="#{autor.id}" />
+							<f:ajax execute="botaoremoverautor" render="dataTableAutores" />
+							<h:graphicImage url="resources/img/delete.png" width="35"
+								height="30" />
+						</h:commandLink>
+					</center>
+				</p:column>
+			</p:dataTable>
+		</p:dialog>
+
+
+		<p:dialog header="Adicione Criticas para esse Livro"
+			id="dialogCriticas" widgetVar="dialogCriticas" position="center"
+			modal="true" width="600px" resizable="false">
+
+			<p:panelGrid>
+				<h:outputLabel value="Critica: " />
+				<p:inputText value="#{livrosManagedBean.criticas.descricao_critica}"
+					id="criticasadd" style="width:350px" />
+				<p:commandButton value="Adicionar"
+					actionListener="#{livrosManagedBean.addCritica}"
+					update="criticasadd, dataTableCriticas">
+				</p:commandButton>
+			</p:panelGrid>
+
+			<br />
+			<p:dataTable value="#{livrosManagedBean.livros.criticas}"
+				var="critica" id="dataTableCriticas">
+				<p:column headerText="Id" width="50">
+					<h:outputLabel value="#{critica.id}" />
+				</p:column>
+				<p:column headerText="Criticas">
+					<h:outputText value="#{critica.descricao_critica}" />
+				</p:column>
+				<p:column headerText="Remover" width="80">
+					<center>
+						<h:commandLink id="botaoremovercritica"
+							actionListener="#{livrosManagedBean.removerCritica}">
+							<f:param name="codigocritica" value="#{critica.id}" />
+							<f:ajax execute="botaoremovercritica" render="dataTableCriticas" />
+							<h:graphicImage url="resources/img/delete.png" width="35"
+								height="30" />
+						</h:commandLink>
+					</center>
+				</p:column>
+			</p:dataTable>
+		</p:dialog>
+	</h:form>
+	<br />
+
+</h:body>
+</html>

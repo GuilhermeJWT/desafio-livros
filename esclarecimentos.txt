@@ -1,0 +1,9 @@
+Infelizmente não consegui concluir com todos requisitos do desafio como:
+Implementar arquitetura REST com o JSF, demoraria mais um tempo mais conseguiria
+
+Implementar o EJB, pois o servidor que utilizei foi o TomCat
+
+e por fim a conversão do preço por extenso, até tenho a classe no projeto,
+mais como o tempo foi curto não consegui implementar
+
+mais o restante acredito ter atentido!
